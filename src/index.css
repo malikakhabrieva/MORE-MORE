@@ -1,0 +1,479 @@
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap');
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+:root {
+  --color-cream: rgb(236, 233, 228);
+  --color-blue: rgb(173, 194, 217);
+  --color-gray: rgb(124, 125, 128);
+  --color-black: rgb(0, 0, 0);
+  --color-white: rgb(255, 255, 255);
+}
+
+body {
+  background-color: var(--color-cream);
+  color: var(--color-black);
+  font-family: 'Inter', sans-serif;
+}
+
+.container {
+  @apply mx-auto px-4 max-w-7xl;
+}
+
+/* Кнопки */
+.btn {
+  @apply px-6 py-2 rounded-lg transition-all duration-300 font-medium inline-block;
+}
+
+.btn-primary {
+  background-color: var(--color-blue);
+  color: var(--color-black);
+}
+
+.btn-primary:hover {
+  background-color: var(--color-gray);
+  color: var(--color-white);
+}
+
+.btn-secondary {
+  background-color: var(--color-gray);
+  color: var(--color-white);
+}
+
+.btn-secondary:hover {
+  background-color: var(--color-black);
+}
+
+/* Хедер */
+.header {
+  background-color: var(--color-white);
+  border-bottom: 1px solid var(--color-blue);
+}
+
+.header-content {
+  @apply flex items-center justify-between py-4;
+}
+
+.logo {
+  @apply text-2xl font-bold text-custom-black;
+}
+
+.nav {
+  @apply flex gap-8;
+}
+
+.nav-link {
+  @apply text-custom-gray hover:text-custom-blue transition-colors;
+}
+
+.header-actions {
+  @apply flex items-center gap-4;
+}
+
+/* Главная страница */
+.hero-banner {
+  /* background-image: url('/assets/images/home_banner.png'); */
+  /* background-size: cover;
+  background-position: center;
+  background-repeat: no-repeat; */
+  width: 100%;
+  min-height: 500px; /* Вы можете изменить эту высоту по своему усмотрению */
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-direction: column;
+  /* color: var(--color-black); */ /* Цвет текста теперь управляется Tailwind классами */
+}
+
+.marquee-section {
+  /* Tailwind classes are already in JSX */
+}
+
+@keyframes marquee {
+  0%   { transform: translateX(0); }
+  100% { transform: translateX(-50%); }
+}
+
+.animate-marquee {
+  animation: marquee 15s linear infinite;
+}
+
+.banner-content {
+  @apply max-w-2xl;
+}
+
+.banner h1 {
+  @apply text-4xl font-bold mb-4;
+}
+
+.banner p {
+  @apply text-lg mb-8;
+}
+
+.categories {
+  @apply py-16;
+}
+
+.categories h2 {
+  @apply text-3xl font-bold mb-8;
+}
+
+.categories-grid {
+  @apply grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8;
+}
+
+.category-card {
+  @apply block bg-white rounded-lg overflow-hidden shadow-sm hover:shadow-md transition-shadow;
+}
+
+.category-card img {
+  @apply w-full h-48 object-cover;
+}
+
+.category-card h3 {
+  @apply p-4 text-lg font-medium;
+}
+
+.popular-products {
+  @apply py-16 bg-custom-cream;
+}
+
+.popular-products h2 {
+  @apply text-3xl font-bold mb-8;
+}
+
+.products-grid {
+  @apply grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8;
+}
+
+.product-card {
+  @apply bg-white rounded-lg overflow-hidden shadow-sm hover:shadow-md transition-shadow p-4;
+}
+
+.product-card img {
+  @apply w-full h-64 object-cover rounded-lg mb-4;
+}
+
+.product-card h3 {
+  @apply text-lg font-medium mb-2;
+}
+
+.product-card .price {
+  @apply text-xl font-bold mb-4;
+}
+
+/* Футер */
+.footer {
+  background-color: var(--color-blue);
+  border-top: 1px solid var(--color-blue);
+  @apply py-12;
+  display: flex;
+  justify-content: center;
+}
+
+.footer-content {
+  @apply w-full max-w-7xl px-4;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.footer-info {
+  @apply w-full max-w-2xl;
+  text-align: center;
+}
+
+.footer h3 {
+  @apply text-lg font-bold mb-4;
+}
+
+.footer p {
+  @apply mb-2;
+}
+
+.social-icons {
+  @apply flex gap-4;
+}
+
+.social-icon {
+  @apply text-2xl text-custom-gray hover:text-custom-blue transition-colors;
+}
+
+/* Корзина */
+.cart-modal {
+  background-color: var(--color-white);
+  border-left: 1px solid var(--color-blue);
+}
+
+.cart-item {
+  border-bottom: 1px solid var(--color-blue);
+}
+
+/* Формы */
+input, select, textarea {
+  border: 1px solid var(--color-blue);
+  background-color: var(--color-white);
+}
+
+input:focus, select:focus, textarea:focus {
+  border-color: var(--color-gray);
+  outline: none;
+}
+
+/* Категории */
+.category-btn {
+  color: var(--color-black);
+}
+
+.category-btn:hover, .category-btn.active {
+  background-color: var(--color-blue);
+  color: var(--color-black);
+}
+
+/* Пагинация */
+.pagination .btn-icon {
+  color: var(--color-black);
+}
+
+.pagination .btn-icon:hover:not(:disabled) {
+  background-color: var(--color-blue);
+}
+
+.pagination .btn-icon:disabled {
+  color: var(--color-gray);
+}
+
+/* Модальные окна */
+.modal {
+  background-color: var(--color-white);
+}
+
+.modal-header {
+  border-bottom: 1px solid var(--color-blue);
+}
+
+/* Уведомления */
+.notification {
+  background-color: var(--color-blue);
+  color: var(--color-black);
+}
+
+/* Загрузчик */
+.loader {
+  border-color: var(--color-blue);
+  border-top-color: var(--color-gray);
+}
+
+/* Адаптивность */
+@media (max-width: 768px) {
+  .container {
+    @apply px-4;
+  }
+  
+  .cart-modal {
+    width: 100%;
+  }
+
+  .header-content {
+    @apply flex-col gap-4;
+  }
+
+  .nav {
+    @apply flex-col items-center;
+  }
+
+  .header-actions {
+    @apply justify-center;
+  }
+}
+
+/* Админ-панель */
+.admin-login {
+  height: 100vh; /* Устанавливаем 100% высоты окна просмотра */
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background-color: var(--color-cream);
+}
+
+.login-form {
+  @apply bg-white p-8 rounded-lg shadow-md w-full max-w-md;
+}
+
+.login-form h1 {
+  @apply text-2xl font-bold mb-6 text-center;
+}
+
+.form-group {
+  @apply mb-4;
+}
+
+.form-group label {
+  @apply block text-sm font-medium mb-2;
+}
+
+.form-group input {
+  border: 1px solid var(--color-blue); /* Явно задаем границу */
+  border-radius: 0.5rem; /* rounded-lg */
+  padding: 0.75rem 1rem; /* px-3 py-2 */
+  width: 100%; /* w-full */
+  background-color: var(--color-white);
+  box-sizing: border-box; /* Важно для правильного отображения padding и border */
+}
+
+.form-group input:focus {
+  border-color: var(--color-gray); /* Цвет границы при фокусе */
+  outline: none;
+}
+
+.error-message {
+  @apply bg-red-100 text-red-700 p-3 rounded-lg mb-4;
+}
+
+.admin-page {
+  @apply py-8;
+}
+
+.admin-header {
+  @apply flex justify-between items-center mb-8;
+}
+
+.admin-header h1 {
+  @apply text-3xl font-bold;
+}
+
+.admin-section {
+  @apply mb-8;
+}
+
+.admin-section h2 {
+  @apply text-2xl font-bold mb-4;
+}
+
+.admin-table {
+  @apply bg-white rounded-lg shadow-md overflow-hidden;
+}
+
+.admin-table table {
+  @apply w-full;
+}
+
+.admin-table th,
+.admin-table td {
+  @apply px-4 py-3 text-left;
+}
+
+.admin-table th {
+  @apply bg-custom-blue text-custom-black font-medium;
+}
+
+.admin-table tr:nth-child(even) {
+  @apply bg-custom-cream;
+}
+
+.admin-table td:last-child {
+  @apply space-x-2;
+}
+
+.admin-table .btn {
+  @apply py-1 px-3 text-sm;
+}
+
+/* Каталог */
+.catalog-page {
+  @apply py-8;
+  background-color: var(--color-cream);
+}
+
+.catalog-layout {
+  @apply container mx-auto;
+}
+
+.catalog-header {
+  @apply mb-8;
+}
+
+.catalog-header h1 {
+  @apply text-3xl font-bold mb-4 text-custom-black;
+}
+
+.filters {
+  @apply bg-white p-6 rounded-lg shadow-sm;
+}
+
+.filter-panel {
+  @apply space-y-6;
+}
+
+.filter-group {
+  @apply space-y-2;
+}
+
+.filter-group h3 {
+  @apply text-lg font-medium text-custom-black mb-2;
+}
+
+.filter-option {
+  @apply flex items-center gap-2 text-custom-gray hover:text-custom-blue transition-colors cursor-pointer;
+}
+
+.filter-option.active {
+  @apply text-custom-blue font-medium;
+}
+
+.search-bar {
+  @apply relative;
+}
+
+.search-bar input {
+  @apply w-full px-4 py-2 rounded-lg border border-custom-blue focus:outline-none focus:border-custom-gray;
+}
+
+.product-grid {
+  @apply grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6;
+}
+
+.product-card {
+  @apply bg-white rounded-lg overflow-hidden shadow-sm hover:shadow-md transition-shadow;
+}
+
+.product-card img {
+  @apply w-full h-64 object-cover;
+}
+
+.product-card-content {
+  @apply p-4;
+}
+
+.product-card h3 {
+  @apply text-lg font-medium mb-2 text-custom-black;
+}
+
+.product-card .description {
+  @apply text-custom-gray mb-4;
+}
+
+.product-card .price {
+  @apply text-xl font-bold text-custom-black mb-4;
+}
+
+.product-card .btn {
+  @apply w-full;
+}
+
+.pagination {
+  @apply flex justify-center items-center gap-4 mt-8;
+}
+
+.pagination button {
+  @apply btn btn-secondary;
+}
+
+.pagination button:disabled {
+  @apply opacity-50 cursor-not-allowed;
+}
+
+.page-info {
+  @apply text-custom-gray;
+} 

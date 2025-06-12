@@ -1,0 +1,205 @@
+.admin-panel {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-color: rgba(0, 0, 0, 0.8);
+    z-index: 2000;
+    display: none;
+}
+
+.admin-panel__container {
+    max-width: 1200px;
+    margin: 2rem auto;
+    background-color: white;
+    border-radius: 8px;
+    padding: 2rem;
+    max-height: calc(100vh - 4rem);
+    overflow-y: auto;
+}
+
+/* Login Form */
+.admin-login {
+    max-width: 400px;
+    margin: 0 auto;
+}
+
+.admin-login h2 {
+    text-align: center;
+    margin-bottom: 2rem;
+    color: var(--color-dark);
+}
+
+.form-group {
+    margin-bottom: 1.5rem;
+}
+
+.form-group label {
+    display: block;
+    margin-bottom: 0.5rem;
+    color: var(--color-text);
+}
+
+.form-group input,
+.form-group textarea {
+    width: 100%;
+    padding: 0.8rem;
+    border: 1px solid #ddd;
+    border-radius: 4px;
+    font-family: var(--font-body);
+}
+
+.form-group textarea {
+    min-height: 100px;
+    resize: vertical;
+}
+
+/* Admin Content */
+.admin-content {
+    padding: 1rem;
+}
+
+.admin-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 2rem;
+}
+
+.admin-header h2 {
+    color: var(--color-dark);
+}
+
+.admin-products table {
+    width: 100%;
+    border-collapse: collapse;
+    margin-top: 1rem;
+}
+
+.admin-products th,
+.admin-products td {
+    padding: 1rem;
+    text-align: left;
+    border-bottom: 1px solid #ddd;
+}
+
+.admin-products th {
+    background-color: var(--color-bg);
+    font-weight: bold;
+}
+
+.admin-products img {
+    max-width: 50px;
+    height: auto;
+}
+
+/* Buttons */
+.button {
+    padding: 0.8rem 1.5rem;
+    border: none;
+    border-radius: 4px;
+    background-color: var(--color-accent);
+    color: white;
+    cursor: pointer;
+    transition: background-color 0.3s ease;
+}
+
+.button:hover {
+    background-color: var(--color-text);
+}
+
+.button + .button {
+    margin-left: 1rem;
+}
+
+/* Modal */
+.modal {
+    display: none;
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-color: rgba(0, 0, 0, 0.5);
+    z-index: 2001;
+}
+
+.modal__content {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    background-color: white;
+    padding: 2rem;
+    border-radius: 8px;
+    width: 90%;
+    max-width: 600px;
+    max-height: 90vh;
+    overflow-y: auto;
+}
+
+.modal__header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 1.5rem;
+}
+
+.modal__close {
+    background: none;
+    border: none;
+    font-size: 1.5rem;
+    cursor: pointer;
+    color: var(--color-text);
+}
+
+/* Responsive Design */
+@media (max-width: 768px) {
+    .admin-header {
+        flex-direction: column;
+        gap: 1rem;
+    }
+
+    .admin-products {
+        overflow-x: auto;
+    }
+
+    .admin-products table {
+        min-width: 600px;
+    }
+}
+
+/* Animations */
+@keyframes fadeIn {
+    from { opacity: 0; }
+    to { opacity: 1; }
+}
+
+.admin-panel {
+    animation: fadeIn 0.3s ease;
+}
+
+/* Notifications */
+.notification {
+    position: fixed;
+    bottom: 2rem;
+    right: 2rem;
+    padding: 1rem 2rem;
+    background-color: var(--color-accent);
+    color: white;
+    border-radius: 4px;
+    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+    transform: translateY(100%);
+    opacity: 0;
+    transition: transform 0.3s ease, opacity 0.3s ease;
+}
+
+.notification.show {
+    transform: translateY(0);
+    opacity: 1;
+}
+
+.notification.error {
+    background-color: #ff4444;
+} 

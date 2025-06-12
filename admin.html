@@ -1,0 +1,155 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Админ-панель | Магазин женской одежды</title>
+    <link rel="stylesheet" href="css/style.css">
+    <link rel="stylesheet" href="css/admin.css">
+</head>
+<body>
+    <div class="admin-container">
+        <!-- Форма входа -->
+        <div id="loginForm" class="admin-login">
+            <h2>Вход в админ-панель</h2>
+            <form>
+                <div class="form-group">
+                    <label for="username">Логин</label>
+                    <input type="text" id="username" name="username" required>
+                </div>
+                <div class="form-group">
+                    <label for="password">Пароль</label>
+                    <input type="password" id="password" name="password" required>
+                </div>
+                <button type="submit" class="button">Войти</button>
+            </form>
+        </div>
+
+        <!-- Админ-панель -->
+        <div id="adminPanel" class="admin-panel" style="display: none;">
+            <header class="admin-header">
+                <h1>Панель управления</h1>
+                <button class="logout-btn">Выйти</button>
+            </header>
+
+            <div class="admin-content">
+                <!-- Форма добавления товара -->
+                <section class="admin-section">
+                    <h2>Добавить товар</h2>
+                    <form id="addProductForm">
+                        <div class="form-group">
+                            <label for="name">Название</label>
+                            <input type="text" id="name" name="name" required>
+                        </div>
+                        <div class="form-group">
+                            <label for="category">Категория</label>
+                            <select id="category" name="category" required>
+                                <option value="Платья">Платья</option>
+                                <option value="Джинсы">Джинсы</option>
+                                <option value="Блузки">Блузки</option>
+                                <option value="Юбки">Юбки</option>
+                                <option value="Верхняя одежда">Верхняя одежда</option>
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <label for="price">Цена</label>
+                            <input type="number" id="price" name="price" min="0" step="0.01" required>
+                        </div>
+                        <div class="form-group">
+                            <label for="description">Описание</label>
+                            <textarea id="description" name="description" required></textarea>
+                        </div>
+                        <div class="form-group">
+                            <label for="sizes">Размеры (через запятую)</label>
+                            <input type="text" id="sizes" name="sizes" required>
+                        </div>
+                        <div class="form-group">
+                            <label for="colors">Цвета (через запятую)</label>
+                            <input type="text" id="colors" name="colors" required>
+                        </div>
+                        <div class="form-group">
+                            <label for="image">URL изображения</label>
+                            <input type="text" id="image" name="image" required>
+                        </div>
+                        <div class="form-group">
+                            <label for="inStock">В наличии</label>
+                            <select id="inStock" name="inStock" required>
+                                <option value="true">Да</option>
+                                <option value="false">Нет</option>
+                            </select>
+                        </div>
+                        <button type="submit" class="button">Добавить товар</button>
+                    </form>
+                </section>
+
+                <!-- Список товаров -->
+                <section class="admin-section">
+                    <h2>Управление товарами</h2>
+                    <div id="productsList" class="products-grid">
+                        <!-- Товары будут добавлены через JavaScript -->
+                    </div>
+                </section>
+            </div>
+        </div>
+    </div>
+
+    <!-- Форма редактирования товара -->
+    <div id="editProductForm" class="modal" style="display: none;">
+        <div class="modal-content">
+            <h2>Редактировать товар</h2>
+            <form>
+                <div class="form-group">
+                    <label for="edit-name">Название</label>
+                    <input type="text" id="edit-name" name="name" required>
+                </div>
+                <div class="form-group">
+                    <label for="edit-category">Категория</label>
+                    <select id="edit-category" name="category" required>
+                        <option value="Платья">Платья</option>
+                        <option value="Джинсы">Джинсы</option>
+                        <option value="Блузки">Блузки</option>
+                        <option value="Юбки">Юбки</option>
+                        <option value="Верхняя одежда">Верхняя одежда</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label for="edit-price">Цена</label>
+                    <input type="number" id="edit-price" name="price" min="0" step="0.01" required>
+                </div>
+                <div class="form-group">
+                    <label for="edit-description">Описание</label>
+                    <textarea id="edit-description" name="description" required></textarea>
+                </div>
+                <div class="form-group">
+                    <label for="edit-sizes">Размеры (через запятую)</label>
+                    <input type="text" id="edit-sizes" name="sizes" required>
+                </div>
+                <div class="form-group">
+                    <label for="edit-colors">Цвета (через запятую)</label>
+                    <input type="text" id="edit-colors" name="colors" required>
+                </div>
+                <div class="form-group">
+                    <label for="edit-image">URL изображения</label>
+                    <input type="text" id="edit-image" name="image" required>
+                </div>
+                <div class="form-group">
+                    <label for="edit-inStock">В наличии</label>
+                    <select id="edit-inStock" name="inStock" required>
+                        <option value="true">Да</option>
+                        <option value="false">Нет</option>
+                    </select>
+                </div>
+                <div class="form-actions">
+                    <button type="submit" class="button">Сохранить</button>
+                    <button type="button" class="button button-secondary" onclick="document.getElementById('editProductForm').style.display='none'">Отмена</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- Скрипты -->
+    <script type="module" src="js/database.js"></script>
+    <script type="module" src="js/init-db.js"></script>
+    <script type="module" src="js/admin.js"></script>
+</body>
+</html> 

@@ -1,0 +1,391 @@
+import React, { useState, useEffect } from 'react';
+import { useNavigate } from 'react-router-dom';
+import axios from 'axios';
+import { FaPlus, FaEdit, FaTrash, FaImage, FaTimes } from 'react-icons/fa';
+import ProductForm from '../components/admin/ProductForm';
+
+const API_URL = 'http://localhost:3002/api';
+
+// Предопределенные цвета
+const PREDEFINED_COLORS = [
+  { name: 'Черный', code: '#000000' },
+  { name: 'Белый', code: '#FFFFFF' },
+  { name: 'Серый', code: '#808080' },
+  { name: 'Пшеничный', code: '#F5DEB3' },
+  { name: 'Коричневый', code: '#452612' },
+  { name: 'Красный', code: '#FF0000' },
+  { name: 'Розовый', code: '#FF00FF' },
+  { name: 'Желтый', code: '#FFFF00' },
+  { name: 'Зеленый', code: '#008000' },
+  { name: 'Голубой', code: '#00FFFF' },
+  { name: 'Синий', code: '#000080' }
+];
+
+// Предопределенные размеры
+const PREDEFINED_SIZES = ['XS', 'S', 'M', 'L'];
+
+// Konami Code последовательность
+const KONAMI_CODE = [
+  'ArrowUp',
+  'ArrowUp',
+  'ArrowDown',
+  'ArrowDown',
+  'ArrowLeft',
+  'ArrowRight',
+  'ArrowLeft',
+  'ArrowRight',
+  'KeyB',
+  'KeyA'
+];
+
+function AdminPage() {
+  const navigate = useNavigate();
+  const [isAuthenticated, setIsAuthenticated] = useState(false);
+  const [username, setUsername] = useState('');
+  const [password, setPassword] = useState('');
+  const [error, setError] = useState('');
+  const [products, setProducts] = useState([]);
+  const [categories, setCategories] = useState([]);
+  const [selectedProduct, setSelectedProduct] = useState(null);
+  const [showProductModal, setShowProductModal] = useState(false);
+  const [selectedColors, setSelectedColors] = useState([]);
+  const [selectedSizes, setSelectedSizes] = useState([]);
+  const [keySequence, setKeySequence] = useState([]);
+
+  useEffect(() => {
+    // Проверяем, был ли доступ получен через Konami Code
+    const adminAccess = sessionStorage.getItem('adminAccess');
+    if (!adminAccess) {
+      navigate('/');
+      return;
+    }
+
+    if (isAuthenticated) {
+      fetchProducts();
+      fetchCategories();
+    }
+  }, [isAuthenticated, navigate]);
+
+  // Обработчик Konami Code
+  useEffect(() => {
+    const handleKeyPress = (e) => {
+      const newSequence = [...keySequence, e.code];
+      
+      // Ограничиваем длину последовательности
+      if (newSequence.length > KONAMI_CODE.length) {
+        newSequence.shift();
+      }
+      
+      setKeySequence(newSequence);
+
+      // Проверяем совпадение с Konami Code
+      if (newSequence.join(',') === KONAMI_CODE.join(',')) {
+        e.preventDefault();
+        sessionStorage.setItem('adminAccess', 'true');
+        setIsAuthenticated(false); // Сбрасываем состояние аутентификации
+        setKeySequence([]); // Сбрасываем последовательность
+      }
+    };
+
+    window.addEventListener('keydown', handleKeyPress);
+    return () => window.removeEventListener('keydown', handleKeyPress);
+  }, [keySequence]);
+
+  useEffect(() => {
+    if (selectedProduct) {
+      // Инициализация выбранных цветов и размеров при редактировании
+      const colors = selectedProduct.colors || [];
+      setSelectedColors(colors.map(c => c.name));
+      const sizes = selectedProduct.sizes || [];
+      setSelectedSizes(sizes);
+    } else {
+      setSelectedColors([]);
+      setSelectedSizes([]);
+    }
+  }, [selectedProduct]);
+
+  const fetchProducts = async () => {
+    try {
+      const response = await axios.get(`${API_URL}/products`);
+      setProducts(response.data.products);
+    } catch (error) {
+      console.error('Error fetching products:', error);
+    }
+  };
+
+  const fetchCategories = async () => {
+    try {
+      const response = await axios.get(`${API_URL}/categories`);
+      setCategories(response.data);
+    } catch (error) {
+      console.error('Error fetching categories:', error);
+    }
+  };
+
+  const handleLogin = async (e) => {
+    e.preventDefault();
+    if (username === 'admin' && password === 'admin123') {
+      setIsAuthenticated(true);
+    } else {
+      setError('Неверные учетные данные');
+    }
+  };
+
+  const handleLogout = () => {
+    setIsAuthenticated(false);
+    sessionStorage.removeItem('adminAccess');
+    navigate('/');
+  };
+
+  const handleColorChange = (colorName) => {
+    setSelectedColors(prev => {
+      if (prev.includes(colorName)) {
+        return prev.filter(c => c !== colorName);
+      } else {
+        return [...prev, colorName];
+      }
+    });
+  };
+
+  const handleSizeChange = (size) => {
+    setSelectedSizes(prev => {
+      if (prev.includes(size)) {
+        return prev.filter(s => s !== size);
+      } else {
+        return [...prev, size];
+      }
+    });
+  };
+
+  const handleAddProduct = () => {
+    setSelectedProduct(null);
+    setShowProductModal(true);
+  };
+
+  const handleEditProduct = (product) => {
+    setSelectedProduct(product);
+    setShowProductModal(true);
+  };
+
+  const handleImageChange = (e) => {
+    const files = Array.from(e.target.files);
+    const newImages = files.map(file => URL.createObjectURL(file));
+    setSelectedProduct(prev => ({
+      ...prev,
+      images: [...(prev.images || []), ...newImages]
+    }));
+  };
+
+  const handleRemoveImage = (index) => {
+    setSelectedProduct(prev => ({
+      ...prev,
+      images: prev.images.filter((_, i) => i !== index)
+    }));
+  };
+
+  const handleSaveProduct = async (formData) => {
+    try {
+      const formDataToSend = new FormData();
+      
+      // Добавляем основные поля
+      formDataToSend.append('name', formData.name);
+      formDataToSend.append('description', formData.description);
+      formDataToSend.append('price', formData.price);
+      formDataToSend.append('category', formData.category);
+      
+      // Преобразуем цвета и размеры в правильный формат
+      const colorsData = formData.colors.map(color => ({
+        name: color.name,
+        code: color.code,
+        sizes: color.sizes.map(size => ({
+          size: size.size,
+          quantity: parseInt(size.quantity) || 0
+        }))
+      }));
+      
+      formDataToSend.append('colors', JSON.stringify(colorsData));
+      formDataToSend.append('sizes', JSON.stringify(formData.sizes));
+      
+      // Добавляем существующие изображения
+      formDataToSend.append('existingImages', JSON.stringify(formData.images));
+
+      if (selectedProduct) {
+        // Обновление существующего товара
+        await axios.put(`${API_URL}/products/${selectedProduct._id}`, formDataToSend);
+      } else {
+        // Создание нового товара
+        await axios.post(`${API_URL}/products`, formDataToSend);
+      }
+
+      setShowProductModal(false);
+      fetchProducts();
+    } catch (error) {
+      console.error('Error saving product:', error);
+      alert('Ошибка при сохранении товара');
+    }
+  };
+
+  const handleDeleteProduct = async (id) => {
+    if (window.confirm('Вы уверены, что хотите удалить этот товар?')) {
+      try {
+        await axios.delete(`${API_URL}/products/${id}`);
+        fetchProducts();
+      } catch (error) {
+        console.error('Error deleting product:', error);
+        alert('Ошибка при удалении товара');
+      }
+    }
+  };
+
+  if (!isAuthenticated) {
+    return (
+      <div className="min-h-screen bg-gray-100 flex items-center justify-center">
+        <div className="bg-white p-8 rounded-lg shadow-md w-96">
+          <h2 className="text-2xl font-bold mb-6 text-center">Вход в админ-панель</h2>
+          <form onSubmit={handleLogin} className="space-y-4">
+            <div>
+              <label className="block text-sm font-medium text-gray-700">Имя пользователя</label>
+              <input
+                type="text"
+                value={username}
+                onChange={(e) => setUsername(e.target.value)}
+                className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-custom-blue focus:ring-custom-blue"
+                required
+              />
+            </div>
+            <div>
+              <label className="block text-sm font-medium text-gray-700">Пароль</label>
+              <input
+                type="password"
+                value={password}
+                onChange={(e) => setPassword(e.target.value)}
+                className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-custom-blue focus:ring-custom-blue"
+                required
+              />
+            </div>
+            {error && <p className="text-red-500 text-sm">{error}</p>}
+            <button
+              type="submit"
+              className="w-full bg-custom-blue text-white py-2 px-4 rounded-md hover:bg-blue-600"
+            >
+              Войти
+            </button>
+          </form>
+        </div>
+      </div>
+    );
+  }
+
+  return (
+    <div className="min-h-screen bg-gray-100 p-6">
+      <div className="max-w-7xl mx-auto">
+        <div className="flex justify-between items-center mb-6">
+          <h1 className="text-3xl font-bold">Управление товарами</h1>
+          <div className="flex gap-4">
+            <button
+              onClick={handleAddProduct}
+              className="bg-custom-blue text-white px-4 py-2 rounded-md hover:bg-blue-600 flex items-center gap-2"
+            >
+              <FaPlus />
+              Добавить товар
+            </button>
+            <button
+              onClick={handleLogout}
+              className="bg-red-500 text-white px-4 py-2 rounded-md hover:bg-red-600"
+            >
+              Выйти
+            </button>
+          </div>
+        </div>
+
+        <div className="bg-white rounded-lg shadow-md overflow-hidden">
+          <table className="min-w-full divide-y divide-gray-200">
+            <thead className="bg-gray-50">
+              <tr>
+                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                  Изображение
+                </th>
+                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                  Название
+                </th>
+                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                  Категория
+                </th>
+                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                  Цена
+                </th>
+                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                  Действия
+                </th>
+              </tr>
+            </thead>
+            <tbody className="bg-white divide-y divide-gray-200">
+              {products.map((product) => (
+                <tr key={product._id}>
+                  <td className="px-6 py-4 whitespace-nowrap">
+                    <img
+                      src={product.images[0]}
+                      alt={product.name}
+                      className="h-16 w-16 object-cover rounded"
+                    />
+                  </td>
+                  <td className="px-6 py-4 whitespace-nowrap">
+                    <div className="text-sm font-medium text-gray-900">{product.name}</div>
+                  </td>
+                  <td className="px-6 py-4 whitespace-nowrap">
+                    <div className="text-sm text-gray-500">{product.category}</div>
+                  </td>
+                  <td className="px-6 py-4 whitespace-nowrap">
+                    <div className="text-sm text-gray-500">{product.price} ₽</div>
+                  </td>
+                  <td className="px-6 py-4 whitespace-nowrap text-sm font-medium">
+                    <button
+                      onClick={() => handleEditProduct(product)}
+                      className="text-custom-blue hover:text-blue-600 mr-4"
+                    >
+                      <FaEdit size={20} />
+                    </button>
+                    <button
+                      onClick={() => handleDeleteProduct(product._id)}
+                      className="text-red-500 hover:text-red-600"
+                    >
+                      <FaTrash size={20} />
+                    </button>
+                  </td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
+        </div>
+      </div>
+
+      {showProductModal && (
+        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
+          <div className="bg-white rounded-lg max-w-4xl w-full mx-4 max-h-[90vh] overflow-y-auto">
+            <div className="p-6">
+              <div className="flex justify-between items-start mb-4">
+                <h2 className="text-2xl font-bold">
+                  {selectedProduct ? 'Редактирование товара' : 'Новый товар'}
+                </h2>
+                <button
+                  onClick={() => setShowProductModal(false)}
+                  className="text-gray-500 hover:text-gray-700"
+                >
+                  <FaTimes size={24} />
+                </button>
+              </div>
+              <ProductForm
+                product={selectedProduct}
+                onSubmit={handleSaveProduct}
+                onCancel={() => setShowProductModal(false)}
+                categories={categories}
+              />
+            </div>
+          </div>
+        </div>
+      )}
+    </div>
+  );
+}
+
+export default AdminPage; 
