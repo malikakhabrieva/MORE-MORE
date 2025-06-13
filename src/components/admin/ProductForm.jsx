@@ -16,7 +16,8 @@ const PREDEFINED_COLORS = [
   { name: 'Коричневый', code: '#A52A2A' }
 ];
 
-const PREDEFINED_SIZES = ['XS', 'S', 'M', 'L', 'XL', 'XXL'];
+const CLOTHING_SIZES = ['XS', 'S', 'M', 'L', 'XL', 'XXL'];
+const SHOE_SIZES = ['36', '37', '38', '39', '40', '41'];
 
 function ProductForm({ product, onSubmit, onCancel, categories = [] }) {
   const [formData, setFormData] = useState({
@@ -31,6 +32,11 @@ function ProductForm({ product, onSubmit, onCancel, categories = [] }) {
 
   const [selectedColors, setSelectedColors] = useState([]);
   const [selectedSizes, setSelectedSizes] = useState([]);
+
+  // Получаем доступные размеры в зависимости от категории
+  const getAvailableSizes = () => {
+    return formData.category === 'shoes' ? SHOE_SIZES : CLOTHING_SIZES;
+  };
 
   useEffect(() => {
     // Если передан существующий товар, заполняем форму его данными
@@ -48,6 +54,19 @@ function ProductForm({ product, onSubmit, onCancel, categories = [] }) {
       setSelectedSizes(product.sizes || []);
     }
   }, [product]);
+
+  // Сбрасываем выбранные размеры при изменении категории
+  useEffect(() => {
+    setSelectedSizes([]);
+    setFormData(prev => ({
+      ...prev,
+      sizes: [],
+      colors: prev.colors.map(color => ({
+        ...color,
+        sizes: []
+      }))
+    }));
+  }, [formData.category]);
 
   const handleInputChange = (e) => {
     const { name, value } = e.target;
@@ -145,11 +164,9 @@ function ProductForm({ product, onSubmit, onCancel, categories = [] }) {
 
   const handleImageChange = (e) => {
     const files = Array.from(e.target.files);
-    const newImages = files.map(file => URL.createObjectURL(file));
-    
     setFormData(prev => ({
       ...prev,
-      images: [...prev.images, ...newImages]
+      images: [...prev.images, ...files]
     }));
   };
 
@@ -162,7 +179,28 @@ function ProductForm({ product, onSubmit, onCancel, categories = [] }) {
 
   const handleSubmit = (e) => {
     e.preventDefault();
-    onSubmit(formData);
+    const formDataToSend = new FormData();
+    
+    // Добавляем основные поля
+    formDataToSend.append('name', formData.name);
+    formDataToSend.append('description', formData.description);
+    formDataToSend.append('price', formData.price);
+    formDataToSend.append('category', formData.category);
+    
+    // Добавляем изображения
+    formData.images.forEach((image, index) => {
+      if (image instanceof File) {
+        formDataToSend.append('images', image);
+      } else {
+        formDataToSend.append('existingImages', image);
+      }
+    });
+    
+    // Добавляем цвета и размеры
+    formDataToSend.append('colors', JSON.stringify(formData.colors));
+    formDataToSend.append('sizes', JSON.stringify(formData.sizes));
+    
+    onSubmit(formDataToSend);
   };
 
   return (
@@ -245,7 +283,7 @@ function ProductForm({ product, onSubmit, onCancel, categories = [] }) {
       <div>
         <label className="block text-sm font-medium text-gray-700">Размеры</label>
         <div className="grid grid-cols-4 gap-2 mt-2">
-          {PREDEFINED_SIZES.map(size => (
+          {getAvailableSizes().map(size => (
             <label key={size} className="flex items-center space-x-2">
               <input
                 type="checkbox"
@@ -301,23 +339,23 @@ function ProductForm({ product, onSubmit, onCancel, categories = [] }) {
               file:rounded-md file:border-0
               file:text-sm file:font-semibold
               file:bg-custom-blue file:text-white
-              hover:file:bg-custom-blue-dark"
+              hover:file:bg-blue-600"
           />
         </div>
-        <div className="mt-4 grid grid-cols-3 gap-4">
+        <div className="mt-4 grid grid-cols-4 gap-4">
           {formData.images.map((image, index) => (
             <div key={index} className="relative">
               <img
-                src={image}
+                src={image instanceof File ? URL.createObjectURL(image) : image}
                 alt={`Preview ${index + 1}`}
                 className="w-full h-32 object-cover rounded-lg"
               />
               <button
                 type="button"
                 onClick={() => handleRemoveImage(index)}
-                className="absolute top-2 right-2 bg-red-500 text-white rounded-full p-1"
+                className="absolute top-2 right-2 bg-red-500 text-white rounded-full p-1 hover:bg-red-600"
               >
-                <FaTimes size={16} />
+                <FaTimes size={12} />
               </button>
             </div>
           ))}
@@ -334,9 +372,9 @@ function ProductForm({ product, onSubmit, onCancel, categories = [] }) {
         </button>
         <button
           type="submit"
-          className="px-4 py-2 bg-custom-blue text-white rounded-md hover:bg-custom-blue-dark"
+          className="px-4 py-2 bg-custom-blue text-white rounded-md hover:bg-blue-600"
         >
-          {product ? 'Сохранить' : 'Создать'}
+          {product ? 'Сохранить' : 'Добавить'}
         </button>
       </div>
     </form>

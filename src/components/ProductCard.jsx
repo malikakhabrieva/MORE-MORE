@@ -7,6 +7,13 @@ function ProductCard({ product, onAddToCart }) {
   const [selectedColor, setSelectedColor] = useState('');
   const [selectedSize, setSelectedSize] = useState('');
 
+  const getImageUrl = (index) => {
+    if (!product.images || !product.images[index]) return '';
+    return product.images[index].startsWith('http') 
+      ? product.images[index] 
+      : `http://localhost:3002${product.images[index]}`;
+  };
+
   const handlePrevImage = (e) => {
     e.stopPropagation();
     setCurrentImageIndex((prev) => (prev === 0 ? product.images.length - 1 : prev - 1));
@@ -30,136 +37,42 @@ function ProductCard({ product, onAddToCart }) {
   };
 
   return (
-    <>
-      <div className="product-card" onClick={() => setShowModal(true)}>
-        <div className="product-image-container">
-          <img
-            src={product.images[currentImageIndex]}
-            alt={product.name}
-            className="product-image"
-          />
-          {product.images.length > 1 && (
-            <>
-              <button
-                onClick={handlePrevImage}
-                className="image-nav-button prev"
-                aria-label="Previous image"
-              >
-                ←
-              </button>
-              <button
-                onClick={handleNextImage}
-                className="image-nav-button next"
-                aria-label="Next image"
-              >
-                →
-              </button>
-              <div className="image-dots">
-                {product.images.map((_, index) => (
-                  <span
-                    key={index}
-                    className={`dot ${index === currentImageIndex ? 'active' : ''}`}
-                    onClick={(e) => {
-                      e.stopPropagation();
-                      setCurrentImageIndex(index);
-                    }}
-                  />
-                ))}
-              </div>
-            </>
-          )}
-        </div>
-        <div className="product-info">
-          <h3 className="product-name">{product.name}</h3>
-          <p className="product-price">{product.price} ₽</p>
-        </div>
+    <div className="product-card bg-white rounded-lg shadow-md overflow-hidden">
+      <div className="relative">
+        <img
+          src={getImageUrl(currentImageIndex)}
+          alt={product.name}
+          className="w-full h-64 object-cover"
+        />
+        {product.images.length > 1 && (
+          <>
+            <button
+              onClick={handlePrevImage}
+              className="absolute left-2 top-1/2 transform -translate-y-1/2 bg-white bg-opacity-50 rounded-full p-2"
+            >
+              ←
+            </button>
+            <button
+              onClick={handleNextImage}
+              className="absolute right-2 top-1/2 transform -translate-y-1/2 bg-white bg-opacity-50 rounded-full p-2"
+            >
+              →
+            </button>
+          </>
+        )}
       </div>
-
-      {showModal && (
-        <div className="modal" onClick={() => setShowModal(false)}>
-          <div className="modal-content" onClick={e => e.stopPropagation()}>
-            <h2>{product.name}</h2>
-            <div className="modal-grid">
-              <div className="modal-images">
-                <img
-                  src={product.images[currentImageIndex]}
-                  alt={product.name}
-                  className="modal-main-image"
-                />
-                <div className="modal-thumbnails">
-                  {product.images.map((image, index) => (
-                    <img
-                      key={index}
-                      src={image}
-                      alt={`${product.name} - ${index + 1}`}
-                      className={`thumbnail ${index === currentImageIndex ? 'active' : ''}`}
-                      onClick={() => setCurrentImageIndex(index)}
-                    />
-                  ))}
-                </div>
-              </div>
-              <div className="modal-details">
-                <p className="modal-price">{product.price} ₽</p>
-                <p className="modal-description">{product.description}</p>
-                
-                <div className="modal-section">
-                  <h3>Цвет</h3>
-                  <div className="color-options">
-                    {product.colors.map((color) => (
-                      <button
-                        key={color}
-                        onClick={() => setSelectedColor(color)}
-                        className={`color-option ${selectedColor === color ? 'selected' : ''}`}
-                      >
-                        {color}
-                      </button>
-                    ))}
-                  </div>
-                </div>
-
-                <div className="modal-section">
-                  <h3>Размер</h3>
-                  <div className="size-options">
-                    {product.sizes.map((size) => (
-                      <button
-                        key={size}
-                        onClick={() => setSelectedSize(size)}
-                        className={`size-option ${selectedSize === size ? 'selected' : ''}`}
-                      >
-                        {size}
-                      </button>
-                    ))}
-                  </div>
-                </div>
-
-                <button
-                  onClick={handleAddToCart}
-                  disabled={!selectedColor || !selectedSize}
-                  className="modal-add-to-cart"
-                  style={{
-                    width: '100%',
-                    padding: '0.75rem',
-                    backgroundColor: 'rgb(173, 194, 217)',
-                    color: 'white',
-                    border: 'none',
-                    borderRadius: '50px',
-                    cursor: 'pointer',
-                    transition: 'background-color 0.2s',
-                    fontWeight: '500',
-                    display: 'flex',
-                    alignItems: 'center',
-                    justifyContent: 'center',
-                    gap: '8px'
-                  }}
-                >
-                  <FaShoppingCart /> Добавить в корзину
-                </button>
-              </div>
-            </div>
-          </div>
-        </div>
-      )}
-    </>
+      <div className="p-4">
+        <h3 className="text-lg font-semibold mb-2">{product.name}</h3>
+        <p className="text-gray-600 mb-2">{product.price} ₽</p>
+        <button
+          onClick={handleAddToCart}
+          className="w-full bg-custom-blue text-white py-2 rounded-md hover:bg-blue-600 flex items-center justify-center gap-2"
+        >
+          <FaShoppingCart />
+          В корзину
+        </button>
+      </div>
+    </div>
   );
 }
 

@@ -15,7 +15,16 @@ const port = process.env.PORT || 3002;
 // Middleware
 app.use(cors());
 app.use(express.json());
+app.use('/uploads', express.static(path.join(__dirname, 'public/uploads')));
 app.use('/public', express.static('public'));
+
+// Serve static files from the dist directory
+app.use(express.static('dist'));
+
+// Catch-all route handler for client-side routing
+app.get('*', (req, res) => {
+  res.sendFile(path.join(__dirname, 'dist', 'index.html'));
+});
 
 // MongoDB connection
 mongoose.connect('mongodb://localhost:27017/more-and-more', {
@@ -26,18 +35,13 @@ mongoose.connect('mongodb://localhost:27017/more-and-more', {
 // Multer configuration for file uploads
 const storage = multer.diskStorage({
   destination: function (req, file, cb) {
-    const uploadDir = 'public/uploads';
-    if (!fs.existsSync(uploadDir)) {
-      fs.mkdirSync(uploadDir, { recursive: true });
-    }
-    cb(null, uploadDir);
+    cb(null, 'public/uploads/products')
   },
   filename: function (req, file, cb) {
-    const uniqueSuffix = Date.now() + '-' + Math.round(Math.random() * 1E9);
-    cb(null, uniqueSuffix + path.extname(file.originalname));
+    const uniqueSuffix = Date.now() + '-' + Math.round(Math.random() * 1E9)
+    cb(null, uniqueSuffix + path.extname(file.originalname))
   }
 });
-
 const upload = multer({ storage: storage });
 
 // Product Schema
@@ -46,7 +50,7 @@ const productSchema = new mongoose.Schema({
   description: { type: String, required: true },
   price: { type: Number, required: true },
   category: { type: String, required: true },
-  images: [{ type: String }],
+  images: [{ type: String }], // Теперь храним пути к файлам
   colors: [{
     name: String,
     code: String,
@@ -113,16 +117,10 @@ app.get('/api/products', async (req, res) => {
 
 app.post('/api/products', upload.array('images'), async (req, res) => {
   try {
-    const { name, description, price, category, colors, sizes, existingImages } = req.body;
+    const { name, description, price, category, colors, sizes } = req.body;
     
     // Обработка загруженных файлов
-    const newImages = req.files ? req.files.map(file => `/public/uploads/${file.filename}`) : [];
-    
-    // Объединение существующих и новых изображений
-    const allImages = [
-      ...(existingImages ? JSON.parse(existingImages) : []),
-      ...newImages
-    ];
+    const images = req.files ? req.files.map(file => `/uploads/products/${file.filename}`) : [];
 
     // Парсим размеры и цвета
     const parsedSizes = JSON.parse(sizes);
@@ -145,7 +143,7 @@ app.post('/api/products', upload.array('images'), async (req, res) => {
       category,
       colors: colorsWithSizes,
       sizes: parsedSizes,
-      images: allImages
+      images
     });
 
     const savedProduct = await product.save();
@@ -167,13 +165,11 @@ app.put('/api/products/:id', upload.array('images'), async (req, res) => {
     }
     
     // Обработка загруженных файлов
-    const newImages = req.files ? req.files.map(file => `/public/uploads/${file.filename}`) : [];
+    const newImages = req.files ? req.files.map(file => `/uploads/products/${file.filename}`) : [];
     
-    // Объединение существующих и новых изображений
-    const allImages = [
-      ...(existingImages ? JSON.parse(existingImages) : []),
-      ...newImages
-    ];
+    // Объединяем существующие и новые изображения
+    const existingImagesArray = existingImages ? JSON.parse(existingImages) : [];
+    const images = [...existingImagesArray, ...newImages];
 
     // Парсим размеры и цвета
     const parsedSizes = sizes ? JSON.parse(sizes) : currentProduct.sizes;
@@ -198,7 +194,7 @@ app.put('/api/products/:id', upload.array('images'), async (req, res) => {
         category,
         colors: colorsWithSizes,
         sizes: parsedSizes,
-        images: allImages,
+        images,
         updatedAt: Date.now()
       },
       { new: true }
@@ -300,6 +296,22 @@ app.delete('/api/categories/:id', async (req, res) => {
       return res.status(404).json({ message: 'Category not found' });
     }
     res.json({ message: 'Category deleted' });
+  } catch (error) {
+    res.status(500).json({ message: error.message });
+  }
+});
+
+// Get product image
+app.get('/api/products/:id/image/:imageIndex', async (req, res) => {
+  try {
+    const product = await Product.findById(req.params.id);
+    if (!product || !product.images[req.params.imageIndex]) {
+      return res.status(404).json({ message: 'Изображение не найдено' });
+    }
+
+    const image = product.images[req.params.imageIndex];
+    res.set('Content-Type', image.contentType);
+    res.send(image.data);
   } catch (error) {
     res.status(500).json({ message: error.message });
   }

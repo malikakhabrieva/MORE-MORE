@@ -5,7 +5,7 @@
 
 :root {
   --color-cream: rgb(236, 233, 228);
-  --color-blue: rgb(173, 194, 217);
+  --color-blue: #ADC2D9;
   --color-gray: rgb(124, 125, 128);
   --color-black: rgb(0, 0, 0);
   --color-white: rgb(255, 255, 255);
@@ -147,20 +147,36 @@ body {
   @apply grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8;
 }
 
+.product-grid {
+  @apply grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6;
+}
+
 .product-card {
-  @apply bg-white rounded-lg overflow-hidden shadow-sm hover:shadow-md transition-shadow p-4;
+  @apply bg-white rounded-lg overflow-hidden shadow-sm hover:shadow-md transition-shadow flex flex-col;
 }
 
 .product-card img {
-  @apply w-full h-64 object-cover rounded-lg mb-4;
+  @apply w-full h-64 object-cover;
+}
+
+.product-card-content {
+  @apply p-4 flex flex-col flex-grow;
 }
 
 .product-card h3 {
-  @apply text-lg font-medium mb-2;
+  @apply text-lg font-medium mb-2 text-custom-black;
+}
+
+.product-card .description {
+  @apply text-custom-gray mb-4;
 }
 
 .product-card .price {
-  @apply text-xl font-bold mb-4;
+  @apply text-xl font-bold text-custom-black mb-4;
+}
+
+.product-card .btn {
+  @apply w-full bg-custom-blue text-white py-2 rounded-md hover:bg-blue-600 flex items-center justify-center gap-2;
 }
 
 /* Футер */
@@ -428,38 +444,6 @@ input:focus, select:focus, textarea:focus {
 
 .search-bar input {
   @apply w-full px-4 py-2 rounded-lg border border-custom-blue focus:outline-none focus:border-custom-gray;
-}
-
-.product-grid {
-  @apply grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6;
-}
-
-.product-card {
-  @apply bg-white rounded-lg overflow-hidden shadow-sm hover:shadow-md transition-shadow;
-}
-
-.product-card img {
-  @apply w-full h-64 object-cover;
-}
-
-.product-card-content {
-  @apply p-4;
-}
-
-.product-card h3 {
-  @apply text-lg font-medium mb-2 text-custom-black;
-}
-
-.product-card .description {
-  @apply text-custom-gray mb-4;
-}
-
-.product-card .price {
-  @apply text-xl font-bold text-custom-black mb-4;
-}
-
-.product-card .btn {
-  @apply w-full;
 }
 
 .pagination {

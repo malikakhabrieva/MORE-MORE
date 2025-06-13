@@ -1,4 +1,5 @@
 import React from 'react';
+import { FaShoppingCart } from 'react-icons/fa';
 
 function ProductGrid({ products, onProductClick }) {
   return (
@@ -14,18 +15,23 @@ function ProductGrid({ products, onProductClick }) {
             alt={product.name}
           />
           <div className="product-card-content">
-            <h3>{product.name}</h3>
-            <p className="description">{product.description}</p>
-            <p className="price">{product.price} ₽</p>
-            <button
-              className="btn"
-              onClick={(e) => {
-                e.stopPropagation();
-                onProductClick(product);
-              }}
-            >
-              В корзину
-            </button>
+            <div>
+              <h3>{product.name}</h3>
+              <p className="description">{product.description}</p>
+            </div>
+            <div className="mt-auto">
+              <p className="price">{product.price} ₽</p>
+              <button
+                className="btn"
+                onClick={(e) => {
+                  e.stopPropagation();
+                  onProductClick(product);
+                }}
+              >
+                <FaShoppingCart />
+                В корзину
+              </button>
+            </div>
           </div>
         </div>
       ))}

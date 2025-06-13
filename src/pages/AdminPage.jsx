@@ -185,36 +185,20 @@ function AdminPage() {
 
   const handleSaveProduct = async (formData) => {
     try {
-      const formDataToSend = new FormData();
-      
-      // Добавляем основные поля
-      formDataToSend.append('name', formData.name);
-      formDataToSend.append('description', formData.description);
-      formDataToSend.append('price', formData.price);
-      formDataToSend.append('category', formData.category);
-      
-      // Преобразуем цвета и размеры в правильный формат
-      const colorsData = formData.colors.map(color => ({
-        name: color.name,
-        code: color.code,
-        sizes: color.sizes.map(size => ({
-          size: size.size,
-          quantity: parseInt(size.quantity) || 0
-        }))
-      }));
-      
-      formDataToSend.append('colors', JSON.stringify(colorsData));
-      formDataToSend.append('sizes', JSON.stringify(formData.sizes));
-      
-      // Добавляем существующие изображения
-      formDataToSend.append('existingImages', JSON.stringify(formData.images));
-
       if (selectedProduct) {
         // Обновление существующего товара
-        await axios.put(`${API_URL}/products/${selectedProduct._id}`, formDataToSend);
+        await axios.put(`${API_URL}/products/${selectedProduct._id}`, formData, {
+          headers: {
+            'Content-Type': 'multipart/form-data'
+          }
+        });
       } else {
         // Создание нового товара
-        await axios.post(`${API_URL}/products`, formDataToSend);
+        await axios.post(`${API_URL}/products`, formData, {
+          headers: {
+            'Content-Type': 'multipart/form-data'
+          }
+        });
       }
 
       setShowProductModal(false);

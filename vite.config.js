@@ -8,9 +8,14 @@ export default defineConfig({
     outDir: 'dist',
   },
   server: {
-    port: 3003,
+    port: 5173,
     open: true,
-    historyApiFallback: true,
+    proxy: {
+      '/api': {
+        target: 'http://localhost:3002',
+        changeOrigin: true,
+      }
+    }
   },
   resolve: {
     alias: {
