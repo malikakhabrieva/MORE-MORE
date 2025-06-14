@@ -15,44 +15,80 @@ function CartPage() {
       alert('Корзина пуста');
       return;
     }
-    navigate('/checkout');
+
+    // Формируем сообщение с составом заказа
+    const orderDetails = items.map(item => 
+      `- ${item.name}\n  Размер: ${item.selectedSize}, Цвет: ${item.selectedColor}\n  Количество: ${item.quantity} шт.\n  Цена: ${item.price.toLocaleString('ru-RU')} ₽`
+    ).join('\n\n');
+
+    const message = `Здравствуйте! Я хочу оформить заказ:\n\n${orderDetails}\n\nИтого: ${total.toLocaleString('ru-RU')} ₽`;
+
+    // Кодируем сообщение для URL
+    const encodedMessage = encodeURIComponent(message);
+    
+    // Открываем Telegram с предварительно заполненным сообщением
+    window.open(`https://t.me/khabrieva_malika?text=${encodedMessage}`, '_blank');
+    
+    // Очищаем корзину
+    clearCart();
   };
 
   if (items.length === 0) {
     return (
-      <div className="empty-cart">
-        <FaShoppingBag className="empty-cart-icon" />
-        <h2>Ваша корзина пуста</h2>
-        <p>Добавьте товары из каталога</p>
-        <Link to="/catalog" className="btn btn-primary">
-          Перейти в каталог
-        </Link>
+      <div className="container mx-auto px-4 py-8 text-center">
+        <div className="max-w-md mx-auto">
+          <FaShoppingBag className="w-16 h-16 mx-auto text-gray-400 mb-4" />
+          <h2 className="text-2xl font-bold mb-2">Ваша корзина пуста</h2>
+          <p className="text-gray-600 mb-6">Добавьте товары из каталога</p>
+          <Link to="/catalog" className="btn btn-primary">
+            Перейти в каталог
+          </Link>
+        </div>
       </div>
     );
   }
 
   return (
-    <div className="cart-page">
-      <div className="container">
-        <h1>Корзина</h1>
-        <div className="cart-content">
-          <div className="cart-items">
+    <div className="container mx-auto px-4 py-8">
+      <h1 className="text-2xl font-bold mb-8">Корзина</h1>
+      <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
+        <div className="lg:col-span-2">
+          <div className="bg-white rounded-lg shadow-sm">
             {items.map((item) => (
-              <CartItem key={`${item.id}-${item.size}-${item.color}`} item={item} />
+              <CartItem 
+                key={`${item._id}-${item.selectedSize}-${item.selectedColor}`} 
+                item={item} 
+              />
             ))}
           </div>
-          <div className="cart-summary">
-            <h2>Итого</h2>
-            <div className="summary-row">
-              <span>Товары ({items.length})</span>
-              <span>{total} ₽</span>
+        </div>
+        <div className="lg:col-span-1">
+          <div className="bg-white rounded-lg shadow-sm p-6">
+            <h2 className="text-xl font-bold mb-4">Итого</h2>
+            <div className="space-y-4">
+              <div className="flex justify-between text-gray-600">
+                <span>Товары ({items.length})</span>
+                <span>{total.toLocaleString('ru-RU')} ₽</span>
+              </div>
+              <div className="border-t pt-4">
+                <div className="flex justify-between font-bold text-lg">
+                  <span>Итого к оплате</span>
+                  <span>{total.toLocaleString('ru-RU')} ₽</span>
+                </div>
+              </div>
+              <button 
+                className="w-full btn btn-primary mb-4" 
+                onClick={handleCheckout}
+              >
+                Оформить заказ в Telegram
+              </button>
+              <button 
+                className="w-full btn btn-secondary" 
+                onClick={clearCart}
+              >
+                Очистить корзину
+              </button>
             </div>
-            <button className="btn btn-primary" onClick={handleCheckout}>
-              Оформить заказ
-            </button>
-            <button className="btn btn-secondary" onClick={clearCart}>
-              Очистить корзину
-            </button>
           </div>
         </div>
       </div>

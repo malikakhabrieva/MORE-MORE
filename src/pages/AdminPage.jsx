@@ -4,7 +4,7 @@ import axios from 'axios';
 import { FaPlus, FaEdit, FaTrash, FaImage, FaTimes } from 'react-icons/fa';
 import ProductForm from '../components/admin/ProductForm';
 
-const API_URL = 'http://localhost:3002/api';
+const API_URL = 'http://localhost:3003/api';
 
 // Предопределенные цвета
 const PREDEFINED_COLORS = [
@@ -187,25 +187,34 @@ function AdminPage() {
     try {
       if (selectedProduct) {
         // Обновление существующего товара
-        await axios.put(`${API_URL}/products/${selectedProduct._id}`, formData, {
+        const response = await axios.put(`${API_URL}/products/${selectedProduct._id}`, formData, {
           headers: {
             'Content-Type': 'multipart/form-data'
           }
         });
+        
+        if (response.data.error) {
+          throw new Error(response.data.error);
+        }
       } else {
         // Создание нового товара
-        await axios.post(`${API_URL}/products`, formData, {
+        const response = await axios.post(`${API_URL}/products`, formData, {
           headers: {
             'Content-Type': 'multipart/form-data'
           }
         });
+        
+        if (response.data.error) {
+          throw new Error(response.data.error);
+        }
       }
 
       setShowProductModal(false);
       fetchProducts();
     } catch (error) {
       console.error('Error saving product:', error);
-      alert('Ошибка при сохранении товара');
+      const errorMessage = error.response?.data?.message || error.message || 'Ошибка при сохранении товара';
+      alert(errorMessage);
     }
   };
 

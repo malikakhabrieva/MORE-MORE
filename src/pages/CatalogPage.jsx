@@ -7,7 +7,7 @@ import ProductModal from '../components/catalog/ProductModal';
 import SearchBar from '../components/catalog/SearchBar';
 import FilterPanel from '../components/catalog/FilterPanel';
 
-const API_URL = 'http://localhost:3002/api';
+const API_URL = 'http://localhost:3003/api';
 
 function CatalogPage() {
   const [searchParams, setSearchParams] = useSearchParams();
@@ -112,12 +112,8 @@ function CatalogPage() {
     setShowModal(true);
   };
 
-  const handleAddToCart = (product, selectedColor, selectedSize) => {
-    addToCart({
-      ...product,
-      selectedColor,
-      selectedSize
-    });
+  const handleAddToCart = (product, selectedColor, selectedSize, quantity) => {
+    addToCart(product, selectedColor, selectedSize, quantity);
     setShowModal(false);
   };
 

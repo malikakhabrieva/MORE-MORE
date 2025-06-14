@@ -55,18 +55,20 @@ function ProductForm({ product, onSubmit, onCancel, categories = [] }) {
     }
   }, [product]);
 
-  // Сбрасываем выбранные размеры при изменении категории
+  // Сбрасываем выбранные размеры при изменении категории только для новых товаров
   useEffect(() => {
-    setSelectedSizes([]);
-    setFormData(prev => ({
-      ...prev,
-      sizes: [],
-      colors: prev.colors.map(color => ({
-        ...color,
-        sizes: []
-      }))
-    }));
-  }, [formData.category]);
+    if (!product) { // Только для новых товаров
+      setSelectedSizes([]);
+      setFormData(prev => ({
+        ...prev,
+        sizes: [],
+        colors: prev.colors.map(color => ({
+          ...color,
+          sizes: []
+        }))
+      }));
+    }
+  }, [formData.category, product]);
 
   const handleInputChange = (e) => {
     const { name, value } = e.target;
@@ -88,19 +90,21 @@ function ProductForm({ product, onSubmit, onCancel, categories = [] }) {
         const existingColor = formData.colors.find(c => c.name === name);
         
         if (existingColor) {
-          return existingColor;
+          // Сохраняем существующие размеры и количества
+          return {
+            ...existingColor,
+            sizes: existingColor.sizes || []
+          };
         }
         
+        // Для нового цвета создаем размеры с количеством 0
         return {
           name,
           code: colorInfo ? colorInfo.code : '#000000',
-          sizes: selectedSizes.map(size => {
-            const existingSize = existingColor?.sizes.find(s => s.size === size);
-            return {
-              size,
-              quantity: existingSize?.quantity || 0
-            };
-          })
+          sizes: selectedSizes.map(size => ({
+            size,
+            quantity: 0
+          }))
         };
       });
       
@@ -145,15 +149,28 @@ function ProductForm({ product, onSubmit, onCancel, categories = [] }) {
         sizes: newSizes,
         colors: prev.colors.map(color => {
           const existingColor = prev.colors.find(c => c.name === color.name);
-          return {
-            ...color,
-            sizes: newSizes.map(newSize => {
-              const existingSize = existingColor?.sizes.find(s => s.size === newSize);
+          if (existingColor) {
+            // Сохраняем существующие размеры и количества
+            const existingSizes = existingColor.sizes || [];
+            const newSizesWithQuantities = newSizes.map(newSize => {
+              const existingSize = existingSizes.find(s => s.size === newSize);
               return {
                 size: newSize,
-                quantity: existingSize?.quantity || 0
+                quantity: existingSize ? existingSize.quantity : 0
               };
-            })
+            });
+            return {
+              ...existingColor,
+              sizes: newSizesWithQuantities
+            };
+          }
+          // Для нового цвета создаем размеры с количеством 0
+          return {
+            ...color,
+            sizes: newSizes.map(newSize => ({
+              size: newSize,
+              quantity: 0
+            }))
           };
         })
       }));
@@ -188,17 +205,33 @@ function ProductForm({ product, onSubmit, onCancel, categories = [] }) {
     formDataToSend.append('category', formData.category);
     
     // Добавляем изображения
+    const existingImages = [];
     formData.images.forEach((image, index) => {
       if (image instanceof File) {
         formDataToSend.append('images', image);
-      } else {
-        formDataToSend.append('existingImages', image);
+      } else if (typeof image === 'string') {
+        // Если это строка (путь к существующему изображению), добавляем в массив
+        existingImages.push(image);
       }
     });
     
-    // Добавляем цвета и размеры
-    formDataToSend.append('colors', JSON.stringify(formData.colors));
-    formDataToSend.append('sizes', JSON.stringify(formData.sizes));
+    // Добавляем существующие изображения как JSON
+    if (existingImages.length > 0) {
+      formDataToSend.append('existingImages', JSON.stringify(existingImages));
+    }
+    
+    // Добавляем цвета и размеры как объекты
+    const colorsData = formData.colors.map(color => ({
+      name: color.name,
+      code: color.code,
+      sizes: color.sizes.map(size => ({
+        size: size.size,
+        quantity: parseInt(size.quantity) || 0
+      }))
+    }));
+
+    formDataToSend.append('colors', JSON.stringify(colorsData));
+    formDataToSend.append('sizes', JSON.stringify(selectedSizes));
     
     onSubmit(formDataToSend);
   };

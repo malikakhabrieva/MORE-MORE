@@ -1,56 +1,108 @@
 import React from 'react';
+import { FaInstagram, FaVk, FaTelegram, FaWhatsapp, FaMapMarkerAlt, FaPhone, FaEnvelope, FaClock } from 'react-icons/fa';
 
 const ContactsPage = () => {
   return (
-    <div className="container">
-      <h1 className="page-title">Контакты</h1>
+    <div className="container mx-auto px-4 py-8">
+      <h1 className="text-3xl font-bold text-center mb-8">Контакты</h1>
       
-      <div className="contacts-grid">
-        <div className="contact-info">
-          <h2>Наши контакты</h2>
-          <div className="contact-details">
-            <p><strong>Адрес:</strong> г. Казань, ул. Баумана, 82</p>
-            <p><strong>Телефон:</strong> +7 (999) 123-45-67</p>
-            <p><strong>Email:</strong> info@moreandmore.ru</p>
-            <p><strong>Режим работы:</strong></p>
-            <p>Пн-Пт: 10:00 - 20:00</p>
-            <p>Сб-Вс: 11:00 - 19:00</p>
+      <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
+        {/* Контактная информация */}
+        <div className="bg-white rounded-lg shadow-lg p-6">
+          <h2 className="text-2xl font-semibold mb-6">Наши магазины</h2>
+          
+          <div className="space-y-6">
+            <div className="border-b pb-4">
+              <h3 className="font-semibold text-lg mb-2">Центральный магазин</h3>
+              <div className="space-y-3">
+                <div className="flex items-center space-x-3">
+                  <FaMapMarkerAlt className="text-gray-600 text-xl" />
+                  <span>г. Казань, ул. Баумана, 82</span>
+                </div>
+                <div className="flex items-center space-x-3">
+                  <FaPhone className="text-gray-600 text-xl" />
+                  <span>+7 (999) 123-45-67</span>
+                </div>
+              </div>
+            </div>
+
+            <div className="border-b pb-4">
+              <h3 className="font-semibold text-lg mb-2">Магазин на Зорге</h3>
+              <div className="space-y-3">
+                <div className="flex items-center space-x-3">
+                  <FaMapMarkerAlt className="text-gray-600 text-xl" />
+                  <span>г. Казань, ул. Зорге, 57/29</span>
+                </div>
+                <div className="flex items-center space-x-3">
+                  <FaPhone className="text-gray-600 text-xl" />
+                  <span>+7 (999) 123-45-68</span>
+                </div>
+              </div>
+            </div>
+
+            <div className="border-b pb-4">
+              <h3 className="font-semibold text-lg mb-2">Магазин на Чистопольской</h3>
+              <div className="space-y-3">
+                <div className="flex items-center space-x-3">
+                  <FaMapMarkerAlt className="text-gray-600 text-xl" />
+                  <span>г. Казань, ул. Чистопольская, 61д</span>
+                </div>
+                <div className="flex items-center space-x-3">
+                  <FaPhone className="text-gray-600 text-xl" />
+                  <span>+7 (999) 123-45-69</span>
+                </div>
+              </div>
+            </div>
+
+            <div className="space-y-3">
+              <div className="flex items-center space-x-3">
+                <FaEnvelope className="text-gray-600 text-xl" />
+                <span>info@more-and-more.ru</span>
+              </div>
+              
+              <div className="flex items-center space-x-3">
+                <FaClock className="text-gray-600 text-xl" />
+                <span>Ежедневно: 10:00 - 22:00</span>
+              </div>
+            </div>
+          </div>
+
+          {/* Социальные сети */}
+          <div className="mt-8">
+            <h3 className="text-xl font-semibold mb-4">Мы в социальных сетях</h3>
+            <div className="flex space-x-4">
+              <a href="https://instagram.com" target="_blank" rel="noopener noreferrer" 
+                 className="text-gray-600 hover:text-gray-800 transition-colors">
+                <FaInstagram className="text-2xl" />
+              </a>
+              <a href="https://vk.com" target="_blank" rel="noopener noreferrer"
+                 className="text-gray-600 hover:text-gray-800 transition-colors">
+                <FaVk className="text-2xl" />
+              </a>
+              <a href="https://t.me" target="_blank" rel="noopener noreferrer"
+                 className="text-gray-600 hover:text-gray-800 transition-colors">
+                <FaTelegram className="text-2xl" />
+              </a>
+              <a href="https://wa.me" target="_blank" rel="noopener noreferrer"
+                 className="text-gray-600 hover:text-gray-800 transition-colors">
+                <FaWhatsapp className="text-2xl" />
+              </a>
+            </div>
           </div>
         </div>
 
-        <div className="contact-form">
-          <h2>Напишите нам</h2>
-          <form>
-            <div className="form-group">
-              <label htmlFor="name">Ваше имя</label>
-              <input type="text" id="name" name="name" required />
-            </div>
-            <div className="form-group">
-              <label htmlFor="email">Email</label>
-              <input type="email" id="email" name="email" required />
-            </div>
-            <div className="form-group">
-              <label htmlFor="message">Сообщение</label>
-              <textarea id="message" name="message" rows="5" required></textarea>
-            </div>
-            <button type="submit" className="btn btn-primary">Отправить</button>
-          </form>
-        </div>
-      </div>
-
-      <div className="map-container">
-        <h2>Как нас найти</h2>
-        <div className="map">
-          {/* Здесь будет карта */}
-          <iframe 
-            src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d2244.772185477012!2d49.1067!3d55.7907!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x415ead1f3c1c1b1f%3A0x1c3c3c3c3c3c3c3c!2z0YPQuy4g0JHQsNC80LDRgNCwLCDQmtCw0LfQsNC90YwsINCg0LXRgdC_LiDQotCw0YLQsNGA0YHRgtCw0L0!5e0!3m2!1sru!2sru!4v1620000000000!5m2!1sru!2sru" 
-            width="100%" 
-            height="450" 
-            style={{ border: 0 }} 
-            allowFullScreen="" 
+        {/* Карта */}
+        <div className="bg-white rounded-lg shadow-lg overflow-hidden h-[450px]">
+          <iframe
+            src="https://yandex.ru/map-widget/v1/?um=constructor%3A166d54737670fd369150747afdd191aff1bce72f464011ac49218840fb7b7feb&amp;source=constructor&amp;width=100%25&amp;height=450&amp;lang=ru_RU&amp;scroll=true"
+            width="100%"
+            height="100%"
+            style={{ border: 0 }}
+            allowFullScreen=""
             loading="lazy"
+            referrerPolicy="no-referrer-when-downgrade"
             title="Карта"
-          ></iframe>
+          />
         </div>
       </div>
     </div>

@@ -8,7 +8,7 @@ const useCartStore = create(
       addToCart: async (product, selectedColor, selectedSize, quantity) => {
         try {
           // Обновляем количество товара на сервере
-          const response = await fetch(`http://localhost:3002/api/products/${product._id}/quantity`, {
+          const response = await fetch(`http://localhost:3003/api/products/${product._id}/quantity`, {
             method: 'PUT',
             headers: {
               'Content-Type': 'application/json',
@@ -56,10 +56,10 @@ const useCartStore = create(
           throw error;
         }
       },
-      removeFromCart: async (productId, color, size) => {
+      removeItem: async (productId, color, size) => {
         try {
-          const { items } = get();
-          const item = items.find(
+          // Возвращаем количество товара на сервере
+          const item = get().items.find(
             (item) =>
               item._id === productId &&
               item.selectedColor === color &&
@@ -67,8 +67,7 @@ const useCartStore = create(
           );
 
           if (item) {
-            // Возвращаем количество товара на сервере
-            const response = await fetch(`http://localhost:3002/api/products/${productId}/quantity`, {
+            const response = await fetch(`http://localhost:3003/api/products/${productId}/quantity`, {
               method: 'PUT',
               headers: {
                 'Content-Type': 'application/json',
@@ -76,7 +75,7 @@ const useCartStore = create(
               body: JSON.stringify({
                 color,
                 size,
-                quantity: -item.quantity, // Отрицательное значение для возврата товара
+                quantity: -item.quantity,
               }),
             });
 
@@ -86,13 +85,11 @@ const useCartStore = create(
             }
 
             set({
-              items: items.filter(
+              items: get().items.filter(
                 (item) =>
-                  !(
-                    item._id === productId &&
+                  !(item._id === productId &&
                     item.selectedColor === color &&
-                    item.selectedSize === size
-                  )
+                    item.selectedSize === size)
               ),
             });
           }
@@ -115,7 +112,7 @@ const useCartStore = create(
             const quantityDiff = newQuantity - item.quantity;
 
             // Обновляем количество товара на сервере
-            const response = await fetch(`http://localhost:3002/api/products/${productId}/quantity`, {
+            const response = await fetch(`http://localhost:3003/api/products/${productId}/quantity`, {
               method: 'PUT',
               headers: {
                 'Content-Type': 'application/json',

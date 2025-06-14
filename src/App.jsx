@@ -43,8 +43,9 @@ function App() {
       <header className="header">
         <div className="container">
           <nav className="header-content">
-            <Link to="/" className="logo">
-              MORE&MORE
+            <Link to="/" className="logo flex flex-col items-center">
+              <span className="text-2xl font-bold">MORE&MORE</span>
+              <span className="text-xs tracking-[0.3em] -mt-1">showroom</span>
             </Link>
             <div className="flex items-center gap-8">
               <div className="nav">

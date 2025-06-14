@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { FaTimes, FaChevronLeft, FaChevronRight } from 'react-icons/fa';
+import { FaTimes, FaChevronLeft, FaChevronRight, FaCheck } from 'react-icons/fa';
 
 function ProductModal({ product, onClose, onAddToCart }) {
   const [selectedImage, setSelectedImage] = useState(0);
@@ -7,6 +7,7 @@ function ProductModal({ product, onClose, onAddToCart }) {
   const [selectedSize, setSelectedSize] = useState('');
   const [quantity, setQuantity] = useState(1);
   const [isFullscreen, setIsFullscreen] = useState(false);
+  const [showNotification, setShowNotification] = useState(false);
 
   const handleAddToCart = () => {
     if (!selectedColor || !selectedSize) {
@@ -23,6 +24,13 @@ function ProductModal({ product, onClose, onAddToCart }) {
     }
 
     onAddToCart(product, selectedColor, selectedSize, quantity);
+    setShowNotification(true);
+    
+    // Закрываем модальное окно через 1.5 секунды
+    setTimeout(() => {
+      setShowNotification(false);
+      onClose();
+    }, 1500);
   };
 
   const handlePrevImage = (e) => {
@@ -59,6 +67,14 @@ function ProductModal({ product, onClose, onAddToCart }) {
 
   return (
     <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
+      {/* Уведомление об успешном добавлении */}
+      {showNotification && (
+        <div className="fixed top-4 right-4 bg-green-500 text-white px-6 py-3 rounded-lg shadow-lg flex items-center gap-2 z-50">
+          <FaCheck />
+          <span>Товар добавлен в корзину</span>
+        </div>
+      )}
+
       <div className="bg-white rounded-lg max-w-4xl w-full mx-4 max-h-[90vh] overflow-y-auto">
         <div className="p-6">
           <div className="flex justify-between items-start mb-4">

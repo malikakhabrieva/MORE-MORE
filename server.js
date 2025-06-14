@@ -10,7 +10,7 @@ const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 
 const app = express();
-const port = process.env.PORT || 3002;
+const port = process.env.PORT || 3003;
 
 // Middleware
 app.use(cors());
@@ -22,14 +22,33 @@ app.use('/public', express.static('public'));
 app.use(express.static('dist'));
 
 // Catch-all route handler for client-side routing
-app.get('*', (req, res) => {
-  res.sendFile(path.join(__dirname, 'dist', 'index.html'));
-});
+// app.get('*', (req, res) => {
+//   res.sendFile(path.join(__dirname, 'dist', 'index.html'));
+// });
 
 // MongoDB connection
 mongoose.connect('mongodb://localhost:27017/more-and-more', {
   useNewUrlParser: true,
   useUnifiedTopology: true
+})
+.then(() => {
+  console.log('Successfully connected to MongoDB.');
+  console.log('Database: more-and-more');
+  console.log('Host: localhost');
+  console.log('Port: 27017');
+})
+.catch((error) => {
+  console.error('Error connecting to MongoDB:', error);
+  process.exit(1);
+});
+
+// Добавляем обработчик ошибок подключения
+mongoose.connection.on('error', (err) => {
+  console.error('MongoDB connection error:', err);
+});
+
+mongoose.connection.on('disconnected', () => {
+  console.log('MongoDB disconnected');
 });
 
 // Multer configuration for file uploads
@@ -76,17 +95,29 @@ const categorySchema = new mongoose.Schema({
 
 const Category = mongoose.model('Category', categorySchema);
 
+// Message Schema
+const messageSchema = new mongoose.Schema({
+  name: { type: String, required: true },
+  email: { type: String, required: true },
+  message: { type: String, required: true },
+  createdAt: { type: Date, default: Date.now },
+  status: { type: String, enum: ['new', 'read', 'replied'], default: 'new' }
+});
+
+const Message = mongoose.model('Message', messageSchema);
+
 // Routes
 // Products
 app.get('/api/products', async (req, res) => {
+  console.log('GET /api/products - Request received');
   try {
     const { category, search, page = 1, limit = 12, sort } = req.query;
-    const query = {};
+    console.log('Query parameters:', { category, search, page, limit, sort });
     
+    const query = {};
     if (category && category !== 'all') {
       query.category = category;
     }
-    
     if (search) {
       query.name = { $regex: search, $options: 'i' };
     }
@@ -103,14 +134,14 @@ app.get('/api/products', async (req, res) => {
       .skip((page - 1) * limit)
       .limit(parseInt(limit));
       
-    const total = await Product.countDocuments(query);
-    
+    console.log('Products found:', products.length);
     res.json({
       products,
-      totalPages: Math.ceil(total / limit),
+      totalPages: Math.ceil(await Product.countDocuments(query) / limit),
       currentPage: parseInt(page)
     });
   } catch (error) {
+    console.error('Error fetching products:', error);
     res.status(500).json({ message: error.message });
   }
 });
@@ -255,10 +286,13 @@ app.put('/api/products/:id/quantity', async (req, res) => {
 
 // Categories
 app.get('/api/categories', async (req, res) => {
+  console.log('GET /api/categories - Request received');
   try {
     const categories = await Category.find();
+    console.log('Categories found:', categories);
     res.json(categories);
   } catch (error) {
+    console.error('Error fetching categories:', error);
     res.status(500).json({ message: error.message });
   }
 });
@@ -314,6 +348,33 @@ app.get('/api/products/:id/image/:imageIndex', async (req, res) => {
     res.send(image.data);
   } catch (error) {
     res.status(500).json({ message: error.message });
+  }
+});
+
+// API endpoint for contact form
+app.post('/api/contact', async (req, res) => {
+  try {
+    const { name, email, message } = req.body;
+    
+    const newMessage = new Message({
+      name,
+      email,
+      message
+    });
+
+    await newMessage.save();
+    console.log('New contact message received:', { name, email });
+    
+    res.status(201).json({ 
+      success: true, 
+      message: 'Сообщение успешно отправлено' 
+    });
+  } catch (error) {
+    console.error('Error saving contact message:', error);
+    res.status(500).json({ 
+      success: false, 
+      message: 'Ошибка при отправке сообщения' 
+    });
   }
 });
 
@@ -455,4 +516,9 @@ async function initializeTestData() {
 app.listen(port, async () => {
   console.log(`Server is running on port ${port}`);
   await initializeTestData();
+});
+
+// Catch-all route handler for client-side routing
+app.get('*', (req, res) => {
+  res.sendFile(path.join(__dirname, 'dist', 'index.html'));
 }); 

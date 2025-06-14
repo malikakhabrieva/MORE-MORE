@@ -3,8 +3,10 @@ import { Link, useNavigate } from 'react-router-dom';
 import axios from 'axios';
 import { sliderImages } from '../data/sliderImages';
 import ImageSlider from '../components/ImageSlider';
+import Hero from '../components/Hero';
 
-const API_URL = 'http://localhost:3002/api';
+// const API_URL = 'http://localhost:3003/api';
+const API_URL = '/api';
 
 // Konami Code последовательность
 const KONAMI_CODE = [
@@ -78,42 +80,7 @@ function HomePage() {
 
   return (
     <div className="home-page">
-      <section className="hero-banner">
-        <div className="container mx-auto">
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-4 min-h-[500px]">
-            <div className="relative overflow-hidden">
-              <img 
-                src="/assets/images/hero-banner-1.jpg" 
-                alt="Banner 1" 
-                className="w-full h-full object-cover"
-              />
-              <div className="absolute inset-0 bg-black bg-opacity-30 flex items-center justify-center">
-                <h2 className="text-white text-2xl font-bold">Новая коллекция</h2>
-              </div>
-            </div>
-            <div className="relative overflow-hidden">
-              <img 
-                src="/assets/images/hero-banner-2.jpg" 
-                alt="Banner 2" 
-                className="w-full h-full object-cover"
-              />
-              <div className="absolute inset-0 bg-black bg-opacity-30 flex items-center justify-center">
-                <h2 className="text-white text-2xl font-bold">Скидки</h2>
-              </div>
-            </div>
-            <div className="relative overflow-hidden">
-              <img 
-                src="/assets/images/hero-banner-3.jpg" 
-                alt="Banner 3" 
-                className="w-full h-full object-cover"
-              />
-              <div className="absolute inset-0 bg-black bg-opacity-30 flex items-center justify-center">
-                <h2 className="text-white text-2xl font-bold">Акции</h2>
-              </div>
-            </div>
-          </div>
-        </div>
-      </section>
+      <Hero />
 
       <section className="marquee-section bg-[#ADC2D9] py-4 overflow-hidden whitespace-nowrap">
         <div className="marquee-content inline-block text-white font-semibold text-2xl animate-marquee">
