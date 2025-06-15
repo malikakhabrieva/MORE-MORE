@@ -176,7 +176,7 @@ body {
 }
 
 .product-card .btn {
-  @apply w-full bg-custom-blue text-white py-2 rounded-md hover:bg-blue-600 flex items-center justify-center gap-2;
+  @apply w-full bg-custom-blue text-white py-2 rounded-md hover:bg-gray-600 flex items-center justify-center gap-2;
 }
 
 /* Футер */

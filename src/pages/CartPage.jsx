@@ -40,9 +40,9 @@ function CartPage() {
           <FaShoppingBag className="w-16 h-16 mx-auto text-gray-400 mb-4" />
           <h2 className="text-2xl font-bold mb-2">Ваша корзина пуста</h2>
           <p className="text-gray-600 mb-6">Добавьте товары из каталога</p>
-          <Link to="/catalog" className="btn btn-primary">
-            Перейти в каталог
-          </Link>
+        <Link to="/catalog" className="btn btn-primary">
+          Перейти в каталог
+        </Link>
         </div>
       </div>
     );
@@ -67,7 +67,7 @@ function CartPage() {
             <h2 className="text-xl font-bold mb-4">Итого</h2>
             <div className="space-y-4">
               <div className="flex justify-between text-gray-600">
-                <span>Товары ({items.length})</span>
+              <span>Товары ({items.length})</span>
                 <span>{total.toLocaleString('ru-RU')} ₽</span>
               </div>
               <div className="border-t pt-4">
@@ -75,19 +75,19 @@ function CartPage() {
                   <span>Итого к оплате</span>
                   <span>{total.toLocaleString('ru-RU')} ₽</span>
                 </div>
-              </div>
+            </div>
               <button 
                 className="w-full btn btn-primary mb-4" 
                 onClick={handleCheckout}
               >
                 Оформить заказ в Telegram
-              </button>
+            </button>
               <button 
                 className="w-full btn btn-secondary" 
                 onClick={clearCart}
               >
-                Очистить корзину
-              </button>
+              Очистить корзину
+            </button>
             </div>
           </div>
         </div>

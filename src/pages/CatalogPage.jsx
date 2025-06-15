@@ -30,12 +30,22 @@ function CatalogPage() {
 
   const { addToCart } = useCartStore();
 
+  // Добавляем функцию для прокрутки вверх
+  const scrollToTop = () => {
+    window.scrollTo({
+      top: 0,
+      behavior: 'smooth'
+    });
+  };
+
   useEffect(() => {
     fetchCategories();
+    scrollToTop(); // Прокрутка вверх при первой загрузке
   }, []);
 
   useEffect(() => {
     fetchProducts();
+    scrollToTop(); // Прокрутка вверх при изменении фильтров
   }, [filters]);
 
   const fetchCategories = async () => {
@@ -105,6 +115,7 @@ function CatalogPage() {
       prev.set('page', page.toString());
       return prev;
     });
+    scrollToTop(); // Прокрутка вверх при смене страницы
   };
 
   const handleProductClick = (product) => {
